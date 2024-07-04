@@ -57,7 +57,7 @@ fn backup_btrfs() -> Result<(), io::Error> {
 
     let date = Utc::now();
     let backup = format!(
-        "/mnt/raid10/@home-{}-{}-{}",
+        "/mnt/raid10/@home-{}-{:02}-{:02}",
         date.year(),
         date.month(),
         date.day()
