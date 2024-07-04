@@ -1,10 +1,16 @@
-//! Basic snapshot-style rsync backup script
+//! Different backup strategies.
 
 use std::{fs, io, process::Command, os};
 
 use chrono::{Utc, Datelike};
 
 fn main() -> Result<(), io::Error> {
+    backup_rsync()
+}
+
+
+/// Basic snapshot-style rsync backup script
+fn backup_rsync() -> Result<(), io::Error> {
     let last = "/media/backup/ubuntu/last";
 
     let mut backup = "/media/backup/ubuntu/".to_string();
