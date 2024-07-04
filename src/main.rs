@@ -27,7 +27,7 @@ fn main() -> Result<(), io::Error> {
 
 // # After the first time.
 // btrfs subvolume snapshot -r /home /home/backup-new
-// -> btrfs send -p /home/backup /home/backup-new | btrfs receive /mnt/raid10
+// btrfs send -p /home/backup /home/backup-new | btrfs receive /mnt/raid10
 // sudo mv /mnt/raid10/backup-new /mnt/raid10/@home-YYYY-mm-dd
 // sudo btrfs subvolume delete /home/backup
 // mv /home/backup-new /home/backup
