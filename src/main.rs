@@ -8,7 +8,7 @@ use std::{
 use chrono::{Datelike, Utc};
 use nix::unistd::Uid;
 
-fn main() -> Result<(), io::Error> {
+fn main() -> anyhow::Result<()> {
     if !Uid::effective().is_root() {
         panic!("You must run this executable with root permissions.");
     }
@@ -35,9 +35,18 @@ fn main() -> Result<(), io::Error> {
 // sudo umount /mnt/raid10
 
 /// Basic snapshot-style btrfs backup script.
-fn backup_btrfs() -> Result<(), io::Error> {
-    println!("mount -a");
-    Command::new("mount").arg("-a").status()?;
+fn backup_btrfs() -> anyhow::Result<()> {
+    println!("mount --all --verbose");
+    Command::new("mount").arg("--all").arg("--verbose").status()?;
+
+    let mut sum = 0;
+    for file in fs::read_dir("/mnt/raid10")?.into_iter() {
+        file?;
+        sum += 1;
+    }
+    if sum == 0 {
+        return Err(anyhow::Error::msg("raid10 isn't mounted!"));
+    }
 
     println!("btrfs subvolume snapshot -r /home /home/backup-new");
     Command::new("btrfs")
@@ -73,8 +82,8 @@ fn backup_btrfs() -> Result<(), io::Error> {
     println!("mv /home/backup-new /home/backup");
     fs::rename("/home/backup-new", "/home/backup")?;
 
-    println!("umount /mnt/raid10");
-    Command::new("umount").arg("/mnt/raid10").status()?;
+    println!("umount /mnt/raid10 --verbose");
+    Command::new("umount").arg("/mnt/raid10").arg("--verbose").status()?;
 
     Ok(())
 }
