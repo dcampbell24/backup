@@ -1,14 +1,15 @@
 //! Different backup strategies.
 
 use std::{
-    fs, io, os,
-    process::{Command, Stdio},
+    fs, os, path::PathBuf, process::{Command, Stdio}
 };
 
 use chrono::{Datelike, Utc};
 use nix::unistd::Uid;
 
 fn main() -> anyhow::Result<()> {
+    clean_projects()?;
+
     if !Uid::effective().is_root() {
         panic!("You must run this executable with root permissions.");
     }
@@ -89,7 +90,7 @@ fn backup_btrfs() -> anyhow::Result<()> {
 }
 
 /// Basic snapshot-style rsync backup script.
-fn _backup_rsync() -> Result<(), io::Error> {
+fn _backup_rsync() -> anyhow::Result<()> {
     let last = "/media/backup/ubuntu/last";
 
     let mut backup = "/media/backup/ubuntu/".to_string();
@@ -112,4 +113,24 @@ fn _backup_rsync() -> Result<(), io::Error> {
     fs::remove_file(last)?;
     os::unix::fs::symlink(&backup, last)?;
     Ok(())
+}
+
+fn clean_projects() -> anyhow::Result<()> {
+    let mut projects_path = dirs::home_dir().unwrap();
+    projects_path = projects_path.join("projects");
+    if fs::exists(&projects_path)? {
+        for entry in fs::read_dir(&projects_path)? {
+            let entry = entry?;
+            let path = entry.path();
+            if path.is_dir() {
+                cargo_clean(&path);
+            }
+        }
+    }
+    Ok(())
+}
+
+fn cargo_clean(path: &PathBuf) {
+    println!("{path:?} cargo clean");
+    let _status = Command::new("cargo").current_dir(path).arg("clean").status();
 }
