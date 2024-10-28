@@ -10,11 +10,11 @@ use nix::unistd::Uid;
 fn main() -> anyhow::Result<()> {
     clean_projects()?;
 
-    if !Uid::effective().is_root() {
-        panic!("You must run this executable with root permissions.");
+    if Uid::effective().is_root() {
+        backup_btrfs()
+    } else {
+        Err(anyhow::Error::msg("You must run this executable with root permissions."))
     }
-
-    backup_btrfs()
 }
 
 // sudo mount -a
@@ -123,14 +123,26 @@ fn clean_projects() -> anyhow::Result<()> {
             let entry = entry?;
             let path = entry.path();
             if path.is_dir() {
-                cargo_clean(&path);
+                if fs::exists(&path.join("Cargo.toml"))? {
+                    cargo_clean(&path)?;
+                }
+                if fs::exists(&path.join("book.toml"))? {
+                    mdbook_clean(&path)?;
+                }
             }
         }
     }
     Ok(())
 }
 
-fn cargo_clean(path: &PathBuf) {
+fn cargo_clean(path: &PathBuf) -> anyhow::Result<()> {
     println!("{path:?} cargo clean");
-    let _status = Command::new("cargo").current_dir(path).arg("clean").status();
+    Command::new("cargo").current_dir(path).arg("clean").status()?;
+    Ok(())
+}
+
+fn mdbook_clean(path: &PathBuf) -> anyhow::Result<()> {
+    println!("{path:?} mdbook clean");
+    Command::new("mdbook").current_dir(path).arg("clean").status()?;
+    Ok(())
 }

@@ -6,6 +6,7 @@
         "chrono",
         "datelike",
         "lazytime",
+        "mdbook",
         "nofail",
         "subvolume",
         "unistd"
