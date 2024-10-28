@@ -1,7 +1,9 @@
 //! Different backup strategies.
 
 use std::{
-    fs, os, path::PathBuf, process::{Command, Stdio}
+    fs, os,
+    path::PathBuf,
+    process::{Command, Stdio},
 };
 
 use chrono::{Datelike, Utc};
@@ -13,7 +15,9 @@ fn main() -> anyhow::Result<()> {
     if Uid::effective().is_root() {
         backup_btrfs()
     } else {
-        Err(anyhow::Error::msg("You must run this executable with root permissions."))
+        Err(anyhow::Error::msg(
+            "You must run this executable with root permissions.",
+        ))
     }
 }
 
@@ -38,10 +42,13 @@ fn main() -> anyhow::Result<()> {
 /// Basic snapshot-style btrfs backup script.
 fn backup_btrfs() -> anyhow::Result<()> {
     println!("mount --all --verbose");
-    Command::new("mount").arg("--all").arg("--verbose").status()?;
+    Command::new("mount")
+        .arg("--all")
+        .arg("--verbose")
+        .status()?;
 
     let mut sum = 0;
-    for file in fs::read_dir("/mnt/raid10")?.into_iter() {
+    for file in fs::read_dir("/mnt/raid10")? {
         file?;
         sum += 1;
     }
@@ -84,7 +91,10 @@ fn backup_btrfs() -> anyhow::Result<()> {
     fs::rename("/home/backup-new", "/home/backup")?;
 
     println!("umount /mnt/raid10 --verbose");
-    Command::new("umount").arg("/mnt/raid10").arg("--verbose").status()?;
+    Command::new("umount")
+        .arg("/mnt/raid10")
+        .arg("--verbose")
+        .status()?;
 
     Ok(())
 }
@@ -123,10 +133,10 @@ fn clean_projects() -> anyhow::Result<()> {
             let entry = entry?;
             let path = entry.path();
             if path.is_dir() {
-                if fs::exists(&path.join("Cargo.toml"))? {
+                if fs::exists(path.join("Cargo.toml"))? {
                     cargo_clean(&path)?;
                 }
-                if fs::exists(&path.join("book.toml"))? {
+                if fs::exists(path.join("book.toml"))? {
                     mdbook_clean(&path)?;
                 }
             }
@@ -137,12 +147,18 @@ fn clean_projects() -> anyhow::Result<()> {
 
 fn cargo_clean(path: &PathBuf) -> anyhow::Result<()> {
     println!("{path:?} cargo clean");
-    Command::new("cargo").current_dir(path).arg("clean").status()?;
+    Command::new("cargo")
+        .current_dir(path)
+        .arg("clean")
+        .status()?;
     Ok(())
 }
 
 fn mdbook_clean(path: &PathBuf) -> anyhow::Result<()> {
     println!("{path:?} mdbook clean");
-    Command::new("mdbook").current_dir(path).arg("clean").status()?;
+    Command::new("mdbook")
+        .current_dir(path)
+        .arg("clean")
+        .status()?;
     Ok(())
 }
