@@ -2,12 +2,22 @@
 name = "backup"
 version = "0.1.0"
 edition = "2021"
+rust-version =  "1.81"
 license = "MIT OR Apache-2.0"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "Creates a backup of your files."
+repository = "https://github.com/dcampbell24/backup"
+readme = "README.md"
+keywords = ["btrfs", "rsync"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 anyhow = "1"
 chrono = "0.4"
 dirs = "5"
 nix = { version = "0.29", features = ["user"] }
+
+[lints.clippy]
+cargo = "warn"
+pedantic = "warn"
+
+multiple_crate_versions = { level = "allow", priority = 1 }
