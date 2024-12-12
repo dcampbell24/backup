@@ -9,6 +9,7 @@ use std::{
 use chrono::{Datelike, Utc};
 use nix::unistd::Uid;
 
+// Run with: sudo --preserve-env env "PATH=$PATH"
 fn main() -> anyhow::Result<()> {
     clean_projects()?;
 
@@ -96,32 +97,6 @@ fn backup_btrfs() -> anyhow::Result<()> {
         .arg("--verbose")
         .status()?;
 
-    Ok(())
-}
-
-/// Basic snapshot-style rsync backup script.
-fn _backup_rsync() -> anyhow::Result<()> {
-    let last = "/media/backup/ubuntu/last";
-
-    let mut backup = "/media/backup/ubuntu/".to_string();
-    let date = Utc::now();
-    backup = format!("{backup}{}-{}-{}", date.year(), date.month(), date.day());
-
-    Command::new("rsync")
-        .args([
-            "--archive",
-            "--partial",
-            "--progress",
-            "--human-readable",
-            "--link-dest=/media/backup/ubuntu/last/",
-            "/home/ubuntu/",
-            &backup,
-        ])
-        .status()
-        .expect("failed to execute rsync");
-
-    fs::remove_file(last)?;
-    os::unix::fs::symlink(&backup, last)?;
     Ok(())
 }
 
