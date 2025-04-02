@@ -1,7 +1,7 @@
 //! Different backup strategies.
 
 use std::{
-    fs, os,
+    fs,
     path::PathBuf,
     process::{Command, Stdio},
 };
@@ -11,14 +11,10 @@ use nix::unistd::Uid;
 
 // Run with: sudo --preserve-env env "PATH=$PATH"
 fn main() -> anyhow::Result<()> {
-    clean_projects()?;
-
     if Uid::effective().is_root() {
         backup_btrfs()
     } else {
-        Err(anyhow::Error::msg(
-            "You must run this executable with root permissions.",
-        ))
+        clean_projects()
     }
 }
 
