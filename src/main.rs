@@ -87,11 +87,12 @@ fn backup_btrfs() -> anyhow::Result<()> {
     println!("mv /home/backup-new /home/backup");
     fs::rename("/home/backup-new", "/home/backup")?;
 
+    // Takes a long time!
     // Detects and repairs data corruption.
-    println!("btrfs scrub start -B /mnt/raid10");
-    Command::new("btrfs")
-        .args(["scrub", "start", "-B", "/mnt/raid10"])
-        .status()?;
+    // println!("btrfs scrub start -B /mnt/raid10");
+    // Command::new("btrfs")
+    //     .args(["scrub", "start", "-B", "/mnt/raid10"])
+    //     .status()?;
 
     // DANGER!
     // Rebalance data across the disks, which improves metadata performance and
