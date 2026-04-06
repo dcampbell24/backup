@@ -93,18 +93,20 @@ fn backup_btrfs() -> anyhow::Result<()> {
         .args(["scrub", "start", "-B", "/mnt/raid10"])
         .status()?;
 
+    // DANGER!
     // Rebalance data across the disks, which improves metadata performance and
     // optimizes disk space utilization.
-    println!("btrfs balance start /mnt/rad10");
-    Command::new("btrfs")
-        .args(["balance", "start", "/mnt/raid10"])
-        .status()?;
+    // println!("btrfs balance start /mnt/rad10");
+    // Command::new("btrfs")
+    //     .args(["balance", "start", "/mnt/raid10"])
+    //     .status()?;
 
+    // DANGER!
     // Reduces file fragmentation, which is helpful if the drive has seen many writes.
-    println!("btrfs defragment -r /mnt/rad10");
-    Command::new("btrfs")
-        .args(["defragment", "-r", "/mnt/raid10"])
-        .status()?;
+    // println!("btrfs defragment -r /mnt/rad10");
+    // Command::new("btrfs")
+    //     .args(["defragment", "-r", "/mnt/raid10"])
+    //     .status()?;
 
     println!("umount /mnt/raid10 --verbose");
     Command::new("umount")
