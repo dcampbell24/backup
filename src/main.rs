@@ -6,7 +6,7 @@ use std::{
     process::{Command, Stdio},
 };
 
-use chrono::{Datelike, Utc};
+use jiff::Timestamp;
 use nix::unistd::Uid;
 
 // Run with: sudo --preserve-env env "PATH=$PATH"
@@ -69,13 +69,9 @@ fn backup_btrfs() -> anyhow::Result<()> {
         .spawn()?;
     receive.wait()?;
 
-    let date = Utc::now();
-    let backup = format!(
-        "/mnt/raid10/@home-{}-{:02}-{:02}",
-        date.year(),
-        date.month(),
-        date.day()
-    );
+    let date = Timestamp::now().strftime("%Y-%m-%d");
+    let backup = format!("/mnt/raid10/@home-{date}");
+
     println!("mv /mnt/raid10/backup-new {backup}");
     fs::rename("/mnt/raid10/backup-new", backup)?;
 
