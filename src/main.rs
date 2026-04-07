@@ -135,7 +135,7 @@ fn clean_projects() -> anyhow::Result<()> {
 }
 
 fn cargo_clean(path: &PathBuf) -> anyhow::Result<()> {
-    println!("{path:?} cargo clean");
+    println!("{} cargo clean", path.display());
     Command::new("cargo")
         .current_dir(path)
         .arg("clean")
@@ -144,7 +144,7 @@ fn cargo_clean(path: &PathBuf) -> anyhow::Result<()> {
 }
 
 fn mdbook_clean(path: &PathBuf) -> anyhow::Result<()> {
-    println!("{path:?} mdbook clean");
+    println!("{} mdbook clean", path.display());
     Command::new("mdbook")
         .current_dir(path)
         .arg("clean")
