@@ -12,9 +12,9 @@ categories = ["command-line-utilities"]
 
 [dependencies]
 anyhow = "1"
-dirs = "5"
+dirs = "6"
 jiff = "0.2"
-nix = { version = "0.29", features = ["user"] }
+nix = { version = "0.31", features = ["user"] }
 
 [lints.clippy]
 cargo = "warn"
