@@ -1,4 +1,7 @@
 //! Different backup strategies.
+//!
+//! Backup your packages with `dnf repoquery --userinstalled --queryformat "%{name}" > user-installed-packages.txt`.
+//! Restore your packages with `sudo dnf install $(cat user-installed-packages.txt)`.
 
 use std::{
     fs,
