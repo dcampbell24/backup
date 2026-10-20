@@ -68,12 +68,12 @@ fn backup_btrfs() -> anyhow::Result<()> {
         .status()?;
 
     let mut sum = 0;
-    for file in fs::read_dir("/mnt/raid10")? {
+    for file in fs::read_dir("/mnt/raid")? {
         file?;
         sum += 1;
     }
     if sum == 0 {
-        return Err(anyhow::Error::msg("raid10 isn't mounted!"));
+        return Err(anyhow::Error::msg("raid isn't mounted!"));
     }
 
     println!("btrfs subvolume snapshot -r /home /home/backup-new");
@@ -81,22 +81,22 @@ fn backup_btrfs() -> anyhow::Result<()> {
         .args(["subvolume", "snapshot", "-r", "/home", "/home/backup-new"])
         .status()?;
 
-    println!("btrfs send -p /home/backup /home/backup-new | btrfs receive /mnt/raid10");
+    println!("btrfs send -p /home/backup /home/backup-new | btrfs receive /mnt/raid");
     let send = Command::new("btrfs")
         .args(["send", "-p", "/home/backup", "/home/backup-new"])
         .stdout(Stdio::piped())
         .spawn()?;
     let mut receive = Command::new("btrfs")
-        .args(["receive", "/mnt/raid10"])
+        .args(["receive", "/mnt/raid"])
         .stdin(send.stdout.unwrap())
         .spawn()?;
     receive.wait()?;
 
     let date = Timestamp::now().strftime("%Y-%m-%d");
-    let backup = format!("/mnt/raid10/@home-{date}");
+    let backup = format!("/mnt/raid/@home-{date}");
 
-    println!("mv /mnt/raid10/backup-new {backup}");
-    fs::rename("/mnt/raid10/backup-new", backup)?;
+    println!("mv /mnt/raid/backup-new {backup}");
+    fs::rename("/mnt/raid/backup-new", backup)?;
 
     println!("btrfs subvolume delete /home/backup");
     Command::new("btrfs")
@@ -108,29 +108,29 @@ fn backup_btrfs() -> anyhow::Result<()> {
 
     // Takes a long time!
     // Detects and repairs data corruption.
-    // println!("btrfs scrub start -B /mnt/raid10");
+    // println!("btrfs scrub start -B /mnt/raid");
     // Command::new("btrfs")
-    //     .args(["scrub", "start", "-B", "/mnt/raid10"])
+    //     .args(["scrub", "start", "-B", "/mnt/raid"])
     //     .status()?;
 
     // DANGER!
     // Rebalance data across the disks, which improves metadata performance and
     // optimizes disk space utilization.
-    // println!("btrfs balance start /mnt/rad10");
+    // println!("btrfs balance start /mnt/raid");
     // Command::new("btrfs")
-    //     .args(["balance", "start", "/mnt/raid10"])
+    //     .args(["balance", "start", "/mnt/raid"])
     //     .status()?;
 
     // DANGER!
     // Reduces file fragmentation, which is helpful if the drive has seen many writes.
-    // println!("btrfs defragment -r /mnt/rad10");
+    // println!("btrfs defragment -r /mnt/raid");
     // Command::new("btrfs")
-    //     .args(["defragment", "-r", "/mnt/raid10"])
+    //     .args(["defragment", "-r", "/mnt/raid"])
     //     .status()?;
 
-    println!("umount /mnt/raid10 --verbose");
+    println!("umount /mnt/raid --verbose");
     Command::new("umount")
-        .arg("/mnt/raid10")
+        .arg("/mnt/raid")
         .arg("--verbose")
         .status()?;
 
