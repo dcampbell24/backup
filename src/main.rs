@@ -21,23 +21,43 @@ fn main() -> anyhow::Result<()> {
     }
 }
 
+// lsblk -f
+//
+// sudo parted /dev/sdb
+// print
+// mklabel gpt
+// mkpart backup-1 btrfs 4MiB 100%
+// quit
+// sudo mkfs.btrfs /dev/sdb1
+//
+// sudo parted /dev/sdc
+// print
+// mklabel gpt
+// mkpart backup-2 btrfs 4MiB 100%
+// quit
+// sudo mkfs.btrfs /dev/sdc1
+//
+// sudo mount /dev/sdb1 /mnt/raid
+// sudo btrfs device add /dev/sdc1 /mnt/raid -f
+// sudo btrfs balance start -dconvert=raid1 -mconvert=raid1 /mnt/raid
+
 // sudo mount -a
 // # In /etc/fstab
-// UUID=4a386a65-8744-46ad-81c2-272bf251fcda /mnt/raid10 btrfs auto,nofail,defaults,lazytime,compress=zstd 0       0
+// UUID=2cf5b54c-bab5-46e2-af42-72408c0bee85 /mnt/raid btrfs auto,nofail,defaults,lazytime,compress=zstd 0       0
 
 // # The first time.
 // btrfs subvolume snapshot -r /home /home/backup
-// sudo btrfs send /home/backup | sudo btrfs receive /mnt/raid10
-// sudo mv /mnt/raid10/backup /storage/@home-YYYY-mm-dd
+// sudo btrfs send /home/backup | sudo btrfs receive /mnt/raid
+// sudo mv /mnt/raid/backup /mnt/raid/@home-YYYY-mm-dd
 
 // # After the first time.
 // btrfs subvolume snapshot -r /home /home/backup-new
-// btrfs send -p /home/backup /home/backup-new | btrfs receive /mnt/raid10
-// sudo mv /mnt/raid10/backup-new /mnt/raid10/@home-YYYY-mm-dd
+// btrfs send -p /home/backup /home/backup-new | btrfs receive /mnt/raid
+// sudo mv /mnt/raid/backup-new /mnt/raid/@home-YYYY-mm-dd
 // sudo btrfs subvolume delete /home/backup
 // mv /home/backup-new /home/backup
 
-// sudo umount /mnt/raid10
+// sudo umount /mnt/raid
 
 /// Basic snapshot-style btrfs backup script.
 fn backup_btrfs() -> anyhow::Result<()> {
