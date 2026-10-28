@@ -2,7 +2,7 @@
 name = "backup"
 version = "0.1.0"
 edition = "2021"
-rust-version =  "1.81"
+rust-version =  "1.99.1"
 license = "MIT OR Apache-2.0"
 description = "Creates a backup of your files."
 repository = "https://github.com/dcampbell24/backup"
@@ -12,7 +12,7 @@ categories = ["command-line-utilities"]
 
 [dependencies]
 anyhow = "1"
-dirs = "6"
+dirs = "7"
 jiff = "0.2"
 nix = { version = "0.31", features = ["user"] }
 

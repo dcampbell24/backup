@@ -4,7 +4,8 @@
 //! Restore your packages with `sudo dnf install $(cat user-installed-packages.txt)`.
 
 use std::{
-    fs,
+    fs::{self, File},
+    io::Write,
     path::PathBuf,
     process::{Command, Stdio},
 };
@@ -90,6 +91,7 @@ fn backup_btrfs() -> anyhow::Result<()> {
         .args(["receive", "/mnt/raid"])
         .stdin(send.stdout.unwrap())
         .spawn()?;
+
     receive.wait()?;
 
     let date = Timestamp::now().strftime("%Y-%m-%d");
@@ -154,6 +156,27 @@ fn clean_projects() -> anyhow::Result<()> {
             }
         }
     }
+
+    let programs = String::from_utf8(
+        Command::new("dnf")
+            .arg("list")
+            .arg("--installed")
+            .output()?
+            .stdout,
+    )?;
+
+    let mut home = dirs::home_dir().unwrap();
+    home = home.join("fedora_pkglist.txt");
+    let mut file = File::create(home)?;
+
+    for program in programs.lines().skip(1) {
+        let words: Vec<_> = program.split_whitespace().collect();
+        if let Some(word) = words.first() {
+            file.write_all(word.as_bytes())?;
+            file.write_all(b"\n")?;
+        }
+    }
+
     Ok(())
 }
 
