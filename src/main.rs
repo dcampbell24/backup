@@ -173,7 +173,7 @@ fn clean_projects() -> anyhow::Result<()> {
         let words: Vec<_> = program.split_whitespace().collect();
         if let Some(word) = words.first() {
             file.write_all(word.as_bytes())?;
-            file.write_all(b"\n")?;
+            file.write_all(b"\\\n")?;
         }
     }
 
