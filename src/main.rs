@@ -141,7 +141,7 @@ fn backup_btrfs() -> anyhow::Result<()> {
 
 fn clean_projects() -> anyhow::Result<()> {
     let mut projects_path = dirs::home_dir().unwrap();
-    projects_path = projects_path.join("projects");
+    projects_path = projects_path.join("Projects");
     if fs::exists(&projects_path)? {
         for entry in fs::read_dir(&projects_path)? {
             let entry = entry?;
